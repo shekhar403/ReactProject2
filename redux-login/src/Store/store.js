@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers } from "@reduxjs/toolkit";
 import {
     persistReducer,
     FLUSH,
@@ -7,21 +8,28 @@ import {
     PERSIST,
     PURGE,
     REGISTER,
-  } from "redux-persist";
-  import storage from "redux-persist/lib/storage";
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-import authreducer from "./authSlice.js"
+import authReducer from "./authSlice.js"
+import countReducer from "./counterSlice.js"
 
 
 const persistConfig = { key: "root", storage, version: 1 };
-const persistedReducer = persistReducer(persistConfig, authreducer);
+
+const rootReducer = combineReducers({
+    auth: authReducer,
+    counter: countReducer
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export default configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }),
 });
